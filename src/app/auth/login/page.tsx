@@ -1,8 +1,6 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import LoginForm from "../_components/LoginForm";
 
 const LoginPage = () => {
   return (
@@ -16,19 +14,7 @@ const LoginPage = () => {
         </CardHeader>
 
         <CardContent>
-          <form className="space-y-5">
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <Input type="email" placeholder="you@example.com" />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Password</Label>
-              <Input type="password" placeholder="••••••••" />
-            </div>
-
-            <Button className="w-full">Login</Button>
-          </form>
+          <LoginForm />
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
