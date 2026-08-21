@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import {
   Card,
@@ -6,16 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+import RegistrationForm from "../_components/RegistrationForm";
 
 const RegisterPage = () => {
   return (
@@ -29,45 +22,7 @@ const RegisterPage = () => {
         </CardHeader>
 
         <CardContent>
-          <form className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="John Doe" />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="john@example.com" />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input id="confirmPassword" type="password" />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Account Type</Label>
-
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  <SelectItem value="CUSTOMER">Customer</SelectItem>
-                  <SelectItem value="PROVIDER">Provider</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button className="w-full">Create Account</Button>
-          </form>
-
+          <RegistrationForm />
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link

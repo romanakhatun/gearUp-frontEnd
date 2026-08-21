@@ -3,7 +3,6 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
-import Navbar from "@/components/shared/Navbar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -23,7 +22,6 @@ export default async function RootLayout({
       className={cn("h-full antialiased", "font-sans", inter.variable)}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
         <main>{children}</main>
         <Toaster position="top-right" richColors />
       </body>

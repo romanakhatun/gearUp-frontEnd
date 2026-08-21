@@ -1,87 +1,67 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import GearCard from "../_components/GearCard";
+import { getGear } from "../_actions/getGear";
+import { getGearCategories } from "../_actions/getGearCategories";
+import GearFilters from "../_components/GearFilters";
 
-const demoGear = [
-  {
-    id: "1",
-    name: "Mountain Bike",
-    category: "Cycling",
-    pricePerDay: 25,
-    image: "/gear/bike.jpg",
-    available: true,
-  },
-  {
-    id: "2",
-    name: "Camping Tent",
-    category: "Camping",
-    pricePerDay: 18,
-    image: "/gear/tent.jpg",
-    available: true,
-  },
-  {
-    id: "3",
-    name: "Football",
-    category: "Sports",
-    pricePerDay: 8,
-    image: "/gear/football.jpg",
-    available: false,
-  },
-];
+const GearPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+  const params = await searchParams;
 
-const GearPage = () => {
+  const [gearData, categoriesData] = await Promise.all([
+    getGear(params),
+    getGearCategories(),
+  ]);
+
+  const categories = categoriesData?.data || [];
+  const gears = gearData?.data || [];
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Browse Gear</h1>
-        <p className="mt-2 text-muted-foreground">
-          Find the equipment you need for your next adventure.
+        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          Browse Gear
+        </h1>
+        <p className="mt-2 text-base text-muted-foreground">
+          Find top-tier equipment tailored for your next adventure.
         </p>
       </div>
 
-      <div className="mb-8 grid gap-3 md:grid-cols-[1fr_200px_160px_auto]">
-        <Input placeholder="Search gear..." />
+      {/* Main Grid: Sidebar + Product Grid */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr] items-start">
+        {/* Filters */}
+        <aside className="w-full">
+          <GearFilters categories={categories} />
+        </aside>
 
-        <Select>
-          <SelectTrigger>
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
+        {/* Products */}
+        <section aria-labelledby="products-heading" className="w-full">
+          <h2 id="products-heading" className="sr-only">
+            Gear Listings
+          </h2>
 
-          <SelectContent>
-            <SelectItem value="cycling">Cycling</SelectItem>
-            <SelectItem value="camping">Camping</SelectItem>
-            <SelectItem value="sports">Sports</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select>
-          <SelectTrigger>
-            <SelectValue placeholder="Price" />
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectItem value="low">Under $10</SelectItem>
-            <SelectItem value="medium">$10 - $30</SelectItem>
-            <SelectItem value="high">$30+</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Button>Filter</Button>
+          {gears.length === 0 ? (
+            <div className="flex min-h-[350px] flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center">
+              <p className="text-lg font-medium text-foreground">
+                No gear found
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Try clearing filters or changing your search criteria.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {gears.map((gear: any) => (
+                <GearCard key={gear.id} gear={gear} />
+              ))}
+            </div>
+          )}
+        </section>
       </div>
-
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {demoGear.map((gear) => (
-          <GearCard key={gear.id} gear={gear} />
-        ))}
-      </div>
-    </div>
+    </main>
   );
 };
 

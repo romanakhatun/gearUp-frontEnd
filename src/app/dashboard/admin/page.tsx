@@ -1,6 +1,5 @@
 import StatsCard from "../_components/StatsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 const AdminDashboard = () => {
   return (
