@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getProviderGear } from "../_actions/getProviderGear";
 
 const gear = [
   ["Mountain Bike", "Cycling", "$25/day", true],
@@ -9,7 +10,9 @@ const gear = [
   ["Football", "Sports", "$8/day", false],
 ];
 
-const ProviderGearPage = () => {
+const ProviderGearPage = async () => {
+  const gearData = await getProviderGear();
+  console.log(gearData?.data);
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -32,21 +35,21 @@ const ProviderGearPage = () => {
 
         <CardContent>
           <div className="space-y-5">
-            {gear.map(([name, category, price, available], index) => (
+            {gearData?.data?.map((item: any) => (
               <div
-                key={index}
+                key={item.id}
                 className="flex flex-col gap-4 border-b pb-5 last:border-0 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
-                  <p className="font-medium">{name}</p>
+                  <p className="font-medium">{item?.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {category} · {price}
+                    {item?.category} · {item?.price}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Badge variant={available ? "default" : "secondary"}>
-                    {available ? "Available" : "Unavailable"}
+                  <Badge variant={item?.stock > 0 ? "default" : "secondary"}>
+                    {item?.stock > 0 ? "Available" : "Unavailable"}
                   </Badge>
 
                   <Button size="sm" variant="outline">

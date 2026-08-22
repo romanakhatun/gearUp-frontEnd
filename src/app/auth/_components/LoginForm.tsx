@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import router from "next/router";
 
 const LoginForm = () => {
   const [state, action, pending] = useActionState(loginAction, false);

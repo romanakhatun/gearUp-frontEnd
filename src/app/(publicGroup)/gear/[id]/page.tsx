@@ -40,7 +40,6 @@ const GearDetailsPage = async ({
   const { id } = await params;
 
   const result = await getGearById(id);
-  console.log("Gear Details:", result);
   const gear = result.data;
   const isAvailable = gear.stock > 0;
 
