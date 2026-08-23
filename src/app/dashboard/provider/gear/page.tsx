@@ -3,16 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getProviderGear } from "../_actions/getProviderGear";
-
-const gear = [
-  ["Mountain Bike", "Cycling", "$25/day", true],
-  ["Camping Tent", "Camping", "$18/day", true],
-  ["Football", "Sports", "$8/day", false],
-];
+import DeleteGearButton from "../_components/DeleteGearButton";
 
 const ProviderGearPage = async () => {
   const gearData = await getProviderGear();
-  console.log(gearData?.data);
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -29,8 +23,12 @@ const ProviderGearPage = async () => {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Inventory</CardTitle>
+          <Badge variant="secondary">
+            {gearData?.data?.length}{" "}
+            {gearData?.data?.length === 1 ? "Gear" : "Gears"}
+          </Badge>
         </CardHeader>
 
         <CardContent>
@@ -53,12 +51,12 @@ const ProviderGearPage = async () => {
                   </Badge>
 
                   <Button size="sm" variant="outline">
-                    Edit
+                    <Link href={`/dashboard/provider/gear/${item.id}`}>
+                      Edit
+                    </Link>
                   </Button>
 
-                  <Button size="sm" variant="destructive">
-                    Delete
-                  </Button>
+                  <DeleteGearButton gearId={item.id} />
                 </div>
               </div>
             ))}

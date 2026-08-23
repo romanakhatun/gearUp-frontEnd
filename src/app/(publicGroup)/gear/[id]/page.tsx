@@ -9,6 +9,9 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getGearById } from "../../_actions/getGear";
+import { getMe } from "@/services/getMe";
+import { RentActionButton } from "../../_components/RentActionButton";
+import { RentCardForm } from "../../_components/RentCardForm";
 
 type Gear = {
   id: string;
@@ -42,6 +45,8 @@ const GearDetailsPage = async ({
   const result = await getGearById(id);
   const gear = result.data;
   const isAvailable = gear.stock > 0;
+  const user = await getMe();
+  console.log(user.data.role);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -151,81 +156,14 @@ const GearDetailsPage = async ({
           {/* =========================
               Rent Card
           ========================= */}
-          <Card className="mt-7">
-            <CardHeader>
-              <CardTitle className="text-lg">Rent this gear</CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="startDate">Start Date</Label>
-
-                  <Input
-                    id="startDate"
-                    type="date"
-                    min={new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="endDate">End Date</Label>
-
-                  <Input
-                    id="endDate"
-                    type="date"
-                    min={new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-              </div>
-
-              {/* Rental Summary */}
-              <div className="rounded-md bg-muted p-4">
-                <div className="flex justify-between text-sm">
-                  <span>Price per day</span>
-
-                  <span>${gear.price}</span>
-                </div>
-
-                <div className="mt-2 flex justify-between text-sm">
-                  <span>Rental duration</span>
-
-                  <span>3 days</span>
-                </div>
-
-                <Separator className="my-3" />
-
-                <div className="flex justify-between font-semibold">
-                  <span>Total</span>
-
-                  <span>${gear.price * 3}</span>
-                </div>
-              </div>
-
-              {/* Rent Button */}
-              {isAvailable ? (
-                <Link
-                  href={`/dashboard/customer/orders/new?gearId=${gear.id}`}
-                  className="block"
-                >
-                  <Button className="w-full">
-                    <CalendarDays className="mr-2 h-4 w-4" />
-                    Rent Now
-                  </Button>
-                </Link>
-              ) : (
-                <Button className="w-full" disabled>
-                  Currently Unavailable
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <RentCardForm
+            gear={gear}
+            isAvailable={isAvailable}
+            user={user?.data}
+          />
         </div>
       </div>
 
-      {/* =========================
-          Specifications
-      ========================= */}
       <section className="mt-12">
         <h2 className="text-xl font-semibold">Specifications</h2>
 

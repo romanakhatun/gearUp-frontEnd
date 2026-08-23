@@ -1,49 +1,39 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { getAdminRentals } from "../_actions/getAdminRentals";
 
-const orders = [
-  ["ORD-1001", "Romana", "Mountain Bike", "CONFIRMED"],
-  ["ORD-1002", "Sara", "Camping Tent", "PAID"],
-  ["ORD-1003", "Nila", "Football", "RETURNED"],
-  ["ORD-1004", "Mina", "Tennis Racket", "CANCELLED"],
-];
+const AdminRentalsPage = async () => {
+  const result = await getAdminRentals();
 
-const AdminOrdersPage = () => {
+  const rentals = result?.data ?? [];
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Rental Orders</h1>
+        <h1 className="text-2xl font-bold">Rental Management</h1>
+
         <p className="text-sm text-muted-foreground">
-          View all rental orders across the platform.
+          Monitor all rental orders across GearUp.
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>All Orders</CardTitle>
-        </CardHeader>
+      <div className="rounded-lg border">
+        {rentals.map((rental: any) => (
+          <div
+            key={rental.id}
+            className="flex items-center justify-between border-b p-4 last:border-0"
+          >
+            <div>
+              <p className="font-medium">{rental.id}</p>
 
-        <CardContent>
-          <div className="space-y-5">
-            {orders.map(([id, customer, gear, status]) => (
-              <div
-                key={id}
-                className="grid gap-3 border-b pb-5 last:border-0 md:grid-cols-[120px_1fr_1fr_auto]"
-              >
-                <p className="text-sm font-medium">{id}</p>
+              <p className="text-sm text-muted-foreground">{rental.status}</p>
+            </div>
 
-                <p className="text-sm">{customer}</p>
-
-                <p className="text-sm text-muted-foreground">{gear}</p>
-
-                <Badge className="w-fit">{status}</Badge>
-              </div>
-            ))}
+            <Badge>{rental.status}</Badge>
           </div>
-        </CardContent>
-      </Card>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default AdminOrdersPage;
+export default AdminRentalsPage;

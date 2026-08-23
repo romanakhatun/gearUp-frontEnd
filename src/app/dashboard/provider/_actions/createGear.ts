@@ -28,11 +28,11 @@ export const createGear = async (preState: any, formData: FormData) => {
       Cookie: `${accessToken?.name}=${accessToken?.value}`,
     },
     body: JSON.stringify(payload),
-    // cache: "no-store",
-    // next: {
-    //   revalidate: 0,
-    //   tags: ["gear"],
-    // },
+    cache: "no-store",
+    next: {
+      revalidate: 0,
+      tags: ["gear"],
+    },
   });
   const data = await res.json();
   console.log("CREATE GEAR RES", data);

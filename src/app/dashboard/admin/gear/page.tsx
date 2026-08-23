@@ -1,58 +1,36 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { getAdminGear } from "../_actions/getAdminGear";
 
-const gear = [
-  ["Mountain Bike", "Sports World", "Cycling", "ACTIVE"],
-  ["Camping Tent", "Outdoor Hub", "Camping", "ACTIVE"],
-  ["Football", "Sports Corner", "Sports", "PENDING"],
-];
+const AdminGearPage = async () => {
+  const result = await getAdminGear();
 
-const AdminGearPage = () => {
+  const gear = result?.data ?? [];
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Gear Moderation</h1>
+        <h1 className="text-2xl font-bold">Gear Management</h1>
+
         <p className="text-sm text-muted-foreground">
-          Review and manage gear listings across the platform.
+          Inspect all gear listings on the platform.
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle>All Gear</CardTitle>
-            <Input className="sm:max-w-xs" placeholder="Search gear..." />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {gear.map((item: any) => (
+          <div key={item.id} className="rounded-lg border p-4">
+            <h2 className="font-semibold">{item.title}</h2>
+
+            <p className="text-sm text-muted-foreground">{item.brand}</p>
+
+            <p className="mt-2">${item.price} / day</p>
+
+            <p className="text-sm text-muted-foreground">Stock: {item.stock}</p>
+
+            <Badge className="mt-3">{item.category}</Badge>
           </div>
-        </CardHeader>
-
-        <CardContent className="space-y-5">
-          {gear.map(([name, provider, category, status]) => (
-            <div
-              key={name}
-              className="flex flex-col gap-4 border-b pb-5 last:border-0 md:flex-row md:items-center md:justify-between"
-            >
-              <div>
-                <p className="font-medium">{name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {provider} · {category}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Badge>{status}</Badge>
-
-                <Button size="sm" variant="outline">
-                  View
-                </Button>
-
-                {status === "PENDING" && <Button size="sm">Approve</Button>}
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+        ))}
+      </div>
     </div>
   );
 };

@@ -1,64 +1,99 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { ArrowLeft, CreditCard, ShieldCheck } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
-const PaymentPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+import PayButton from "@/app/dashboard/customer/_components/PayButton";
+
+const PayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
+  // এখানে তোমার getOrderById action দিয়ে order আনবে
+  // const result = await getOrderById(id);
+
+  // Example data
+  const order = {
+    id,
+    gearTitle: "Mountain Bike",
+    startDate: "Aug 25, 2026",
+    endDate: "Aug 28, 2026",
+    totalAmount: 75,
+    status: "CONFIRMED",
+  };
+
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Complete Payment</h1>
-        <p className="text-sm text-muted-foreground">
-          Review your rental before continuing to secure payment.
+    <div className="mx-auto max-w-3xl px-4 py-10">
+      <Link
+        href="/dashboard/customer/orders"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Orders
+      </Link>
+
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Complete Payment</h1>
+
+        <p className="mt-2 text-muted-foreground">
+          Review your rental details and continue to secure payment.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Order Summary</CardTitle>
-            <Badge>CONFIRMED</Badge>
+            <CardTitle>{order.gearTitle}</CardTitle>
+
+            <Badge>{order.status}</Badge>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-5">
-          <div>
-            <p className="font-medium">Mountain Bike</p>
-            <p className="text-sm text-muted-foreground">Aug 20 - Aug 23</p>
+        <CardContent className="space-y-6">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-sm text-muted-foreground">Rental Start</p>
+
+              <p className="mt-1 font-medium">{order.startDate}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-muted-foreground">Rental End</p>
+
+              <p className="mt-1 font-medium">{order.endDate}</p>
+            </div>
           </div>
 
           <Separator />
 
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>Rental</span>
-              <span>$75</span>
-            </div>
+          <div className="flex items-center justify-between">
+            <span className="font-medium">Total Amount</span>
 
-            <div className="flex justify-between">
-              <span>Service fee</span>
-              <span>$5</span>
-            </div>
+            <span className="text-2xl font-bold">${order.totalAmount}</span>
+          </div>
 
-            <Separator />
+          <div className="rounded-lg bg-muted p-4">
+            <div className="flex gap-3">
+              <ShieldCheck className="h-5 w-5 shrink-0" />
 
-            <div className="flex justify-between text-base font-semibold">
-              <span>Total</span>
-              <span>$80</span>
+              <div>
+                <p className="font-medium">Secure Payment</p>
+
+                <p className="mt-1 text-sm text-muted-foreground">
+                  You will be redirected to Stripe Checkout to securely complete
+                  your payment.
+                </p>
+              </div>
             </div>
           </div>
 
-          <Button className="w-full">Continue to Secure Payment</Button>
-
-          <p className="text-center text-xs text-muted-foreground">
-            You will be redirected to the secure payment gateway.
-          </p>
+          <PayButton orderId={order.id} />
         </CardContent>
       </Card>
     </div>
   );
 };
 
-export default PaymentPage;
+export default PayPage;
