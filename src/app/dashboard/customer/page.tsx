@@ -10,39 +10,33 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { getCustomerOrders } from "./_actions/getCustomerOrders";
 
 const CustomerDashboardPage = async () => {
-  // Later replace these with API data
-  const stats = {
-    totalOrders: 12,
-    activeRentals: 2,
-    completedRentals: 8,
-    totalPayments: 245,
-  };
+  const data = await getCustomerOrders();
 
-  const recentOrders = [
-    {
-      id: "ORD-001",
-      gear: "Mountain Bike",
-      dates: "Aug 20 - Aug 22",
-      amount: 75,
-      status: "CONFIRMED",
-    },
-    {
-      id: "ORD-002",
-      gear: "Camping Tent",
-      dates: "Aug 24 - Aug 26",
-      amount: 50,
-      status: "PAID",
-    },
-    {
-      id: "ORD-003",
-      gear: "Hiking Backpack",
-      dates: "Aug 28 - Aug 29",
-      amount: 20,
-      status: "RETURNED",
-    },
-  ];
+  const orders = data?.data ?? [];
+
+  // Calculate dashboard stats from real orders
+  const totalOrders = orders.length;
+
+  const activeStatuses = ["PLACED", "CONFIRMED", "PAID", "PICKED_UP"];
+
+  const activeRentals = orders.filter((order: any) =>
+    activeStatuses.includes(order.status),
+  ).length;
+
+  const completedRentals = orders.filter(
+    (order: any) => order.status === "RETURNED",
+  ).length;
+
+  const totalPayments = orders.reduce(
+    (total: number, order: any) => total + Number(order.totalAmount || 0),
+    0,
+  );
+
+  // Show latest 3 orders
+  const recentOrders = orders.slice(0, 3);
 
   return (
     <div className="space-y-8">
@@ -59,27 +53,19 @@ const CustomerDashboardPage = async () => {
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Total Orders"
-          value={stats.totalOrders}
-          icon={ShoppingBag}
-        />
+        <StatCard title="Total Orders" value={totalOrders} icon={ShoppingBag} />
 
-        <StatCard
-          title="Active Rentals"
-          value={stats.activeRentals}
-          icon={Package}
-        />
+        <StatCard title="Active Rentals" value={activeRentals} icon={Package} />
 
         <StatCard
           title="Completed Rentals"
-          value={stats.completedRentals}
+          value={completedRentals}
           icon={CalendarDays}
         />
 
         <StatCard
           title="Total Payments"
-          value={`$${stats.totalPayments}`}
+          value={`$${totalPayments}`}
           icon={CreditCard}
         />
       </div>
@@ -122,34 +108,68 @@ const CustomerDashboardPage = async () => {
         </CardHeader>
 
         <CardContent>
-          <div className="space-y-4">
-            {recentOrders.map((order) => (
-              <div
-                key={order.id}
-                className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="space-y-1">
-                  <p className="font-medium">{order.gear}</p>
+          {recentOrders.length === 0 ? (
+            <div className="py-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                You have no rental orders yet.
+              </p>
 
-                  <p className="text-sm text-muted-foreground">
-                    {order.id} · {order.dates}
-                  </p>
-                </div>
+              <Link href="/gear" className="mt-4 inline-block">
+                <Button size="sm">Browse Gear</Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {recentOrders.map((order: any) => {
+                const startDate = new Date(order.startDate).toLocaleDateString(
+                  "en-US",
+                  {
+                    month: "short",
+                    day: "numeric",
+                  },
+                );
 
-                <div className="flex items-center justify-between gap-4 sm:justify-end">
-                  <p className="font-medium">${order.amount}</p>
+                const endDate = new Date(order.endDate).toLocaleDateString(
+                  "en-US",
+                  {
+                    month: "short",
+                    day: "numeric",
+                  },
+                );
 
-                  <OrderStatus status={order.status} />
+                return (
+                  <div
+                    key={order.id}
+                    className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="space-y-1">
+                      <p className="font-medium">
+                        {order.gearItem?.title || "Rental Gear"}
+                      </p>
 
-                  <Link href={`/dashboard/customer/orders/${order.id}`}>
-                    <Button variant="outline" size="sm">
-                      Details
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+                      <p className="text-sm text-muted-foreground">
+                        {startDate} - {endDate}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4 sm:justify-end">
+                      <p className="font-medium">
+                        ${Number(order.totalAmount).toFixed(2)}
+                      </p>
+
+                      <OrderStatus status={order.status} />
+
+                      <Link href={`/dashboard/customer/orders/${order.id}`}>
+                        <Button variant="outline" size="sm">
+                          Details
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

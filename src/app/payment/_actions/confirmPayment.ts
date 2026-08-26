@@ -2,28 +2,30 @@
 
 import { cookies } from "next/headers";
 
-export const createPayment = async (orderId: string) => {
+export const confirmPayment = async (sessionId: string) => {
   try {
     const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+    const accessToken = cookieStore.get("accessToken");
 
     if (!accessToken) {
       return {
         success: false,
-        message: "Unauthorized. Please log in.",
+        message: "Unauthorized. Please log in again.",
         data: null,
       };
     }
 
     const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/payments/create`,
+      `${process.env.BACKEND_API_URL}/api/payments/confirm`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          cookie: `${accessToken.name}=${accessToken.value}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ orderId }),
+        body: JSON.stringify({
+          sessionId,
+        }),
         cache: "no-store",
       },
     );
@@ -33,7 +35,7 @@ export const createPayment = async (orderId: string) => {
   } catch (error: any) {
     return {
       success: false,
-      message: error?.message || "Failed to initiate payment session",
+      message: error?.message || "Failed to connect to the payment server.",
       data: null,
     };
   }

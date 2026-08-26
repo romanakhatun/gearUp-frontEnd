@@ -1,21 +1,19 @@
+// app/dashboard/customer/reviews/_actions/getMyReviews.ts
 "use server";
+
 import { cookies } from "next/headers";
 
-export const getPaymentById = async (id: string) => {
+export async function getMyReviews() {
   try {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
 
     if (!accessToken) {
-      return {
-        success: false,
-        message: "Unauthorized. Please log in.",
-        data: null,
-      };
+      return { success: false, data: [] };
     }
 
     const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/payments/${id}`,
+      `${process.env.BACKEND_API_URL}/api/review/my-reviews`,
       {
         method: "GET",
         headers: {
@@ -27,11 +25,8 @@ export const getPaymentById = async (id: string) => {
 
     const data = await res.json();
     return data;
-  } catch (error: any) {
-    return {
-      success: false,
-      message: error?.message || "Failed to fetch payment details",
-      data: null,
-    };
+  } catch (error) {
+    console.error("Failed to fetch my reviews:", error);
+    return { success: false, data: [] };
   }
-};
+}

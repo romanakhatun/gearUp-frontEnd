@@ -1,6 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import UpdateOrderStatusButton from "../_components/UpdateOrderStatusButton";
 import { getProviderRentals } from "../_actions/getProviderRentals";
 
 const ProviderOrdersPage = async () => {
@@ -10,7 +11,6 @@ const ProviderOrdersPage = async () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Rental Orders</h1>
 
@@ -19,99 +19,79 @@ const ProviderOrdersPage = async () => {
         </p>
       </div>
 
-      {/* Orders Card */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Orders</CardTitle>
-
-            <Badge variant="secondary">
-              {orders.length} {orders.length === 1 ? "Order" : "Orders"}
-            </Badge>
-          </div>
+          <CardTitle>Orders</CardTitle>
         </CardHeader>
 
         <CardContent>
-          {orders.length === 0 ? (
-            <div className="py-10 text-center">
-              <p className="font-medium">No rental orders found</p>
+          <div className="space-y-5">
+            {orders.length === 0 ? (
+              <div className="py-10 text-center text-sm text-muted-foreground">
+                No rental orders found.
+              </div>
+            ) : (
+              orders.map((order: any) => (
+                <div
+                  key={order.id}
+                  className="grid gap-4 border-b pb-5 last:border-0 md:grid-cols-[1fr_1fr_auto_auto]"
+                >
+                  {/* Customer + Gear */}
+                  <div>
+                    <p className="font-medium">{order.gearItem?.title}</p>
 
-              <p className="mt-1 text-sm text-muted-foreground">
-                New rental requests will appear here.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {orders.map((order: any) => (
-                <div key={order.id} className="rounded-lg border p-4">
-                  <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-center">
-                    {/* Gear + Customer */}
-                    <div>
-                      <p className="font-semibold">{order.gearItem?.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Customer: {order.customer?.name}
+                    </p>
 
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {order.customer?.name}
-                      </p>
+                    <p className="text-xs text-muted-foreground">
+                      {order.customer?.email}
+                    </p>
+                  </div>
 
-                      <p className="text-xs text-muted-foreground">
-                        {order.customer?.email}
-                      </p>
-                    </div>
+                  {/* Dates */}
+                  <div className="text-sm text-muted-foreground">
+                    <p>
+                      {new Date(order.startDate).toLocaleDateString()} -{" "}
+                      {new Date(order.endDate).toLocaleDateString()}
+                    </p>
 
-                    {/* Rental Information */}
-                    <div className="space-y-1 text-sm">
-                      <p>
-                        <span className="text-muted-foreground">Rental: </span>
-                        {new Date(order.startDate).toLocaleDateString()} -{" "}
-                        {new Date(order.endDate).toLocaleDateString()}
-                      </p>
+                    <p className="mt-1">Total: ${order.totalAmount}</p>
+                  </div>
 
-                      <p>
-                        <span className="text-muted-foreground">Total: </span>
+                  {/* Status */}
 
-                        <span className="font-semibold">
-                          ${order.totalAmount}
-                        </span>
-                      </p>
-                    </div>
+                  <Badge
+                    variant={
+                      order.status === "PLACED"
+                        ? "secondary"
+                        : order.status === "CONFIRMED"
+                          ? "outline"
+                          : order.status === "PAID"
+                            ? "default"
+                            : order.status === "CANCELLED"
+                              ? "destructive"
+                              : "secondary"
+                    }
+                    className="w-fit"
+                  >
+                    {order.status}
+                  </Badge>
 
-                    {/* Status + Action */}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge
-                        variant={
-                          order.status === "PLACED"
-                            ? "secondary"
-                            : order.status === "PAID"
-                              ? "default"
-                              : order.status === "PICKED_UP"
-                                ? "outline"
-                                : order.status === "RETURNED"
-                                  ? "default"
-                                  : "destructive"
-                        }
-                      >
-                        {order.status}
-                      </Badge>
-
-                      {order.status === "PLACED" && (
-                        <Button size="sm">Confirm</Button>
+                  {/* Action */}
+                  <div>
+                    {order.status !== "RETURNED" &&
+                      order.status !== "CANCELLED" && (
+                        <UpdateOrderStatusButton
+                          orderId={order.id}
+                          status={order.status}
+                        />
                       )}
-
-                      {order.status === "PAID" && (
-                        <Button size="sm">Mark Picked Up</Button>
-                      )}
-
-                      {order.status === "PICKED_UP" && (
-                        <Button size="sm" variant="outline">
-                          Mark Returned
-                        </Button>
-                      )}
-                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

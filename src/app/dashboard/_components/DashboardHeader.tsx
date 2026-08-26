@@ -143,18 +143,6 @@ const DashboardHeader = ({ user }: DashboardHeaderProps) => {
               Dashboard
             </DropdownMenuItem>
 
-            {/* Profile */}
-            <DropdownMenuItem onClick={() => router.push("/profile")}>
-              <User className="mr-2 h-4 w-4" />
-              Profile
-            </DropdownMenuItem>
-
-            {/* Settings */}
-            <DropdownMenuItem onClick={() => router.push("/settings")}>
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-            </DropdownMenuItem>
-
             <DropdownMenuSeparator />
 
             {/* Logout */}
